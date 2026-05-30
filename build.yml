@@ -1,0 +1,36 @@
+name: Build TWA APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Bubblewrap
+        run: npm install -g @bubblewrap/cli
+
+      - name: Init TWA
+        run: |
+          echo '{"packageId":"com.riotarena.app","host":"benevolent-chimera-952b86.netlify.app","name":"Riot Arena","launcherName":"Riot Arena","display":"standalone","orientation":"portrait","themeColor":"#0a0f1e","navigationColor":"#0a0f1e","backgroundColor":"#0a0f1e","startUrl":"/","iconUrl":"https://benevolent-chimera-952b86.netlify.app/icon-512.png","maskableIconUrl":"https://benevolent-chimera-952b86.netlify.app/icon-512.png","appVersion":"1.0.0","appVersionCode":1,"signingMode":"none","generatorApp":"bubblewrap-cli","webManifestUrl":"https://benevolent-chimera-952b86.netlify.app/manifest.json","isChromeOSOnly":false,"isMetaQuest":false,"fullScopeUrl":"https://benevolent-chimera-952b86.netlify.app/","minSdkVersion":19,"enableNotifications":true}' > twa-manifest.json
+          bubblewrap init --manifest=https://benevolent-chimera-952b86.netlify.app/manifest.json --directory=twa
+
+      - name: Build APK
+        working-directory: twa
+        run: bubblewrap build --skipPwaValidation
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: riot-arena-apk
+          path: twa/app/build/outputs/apk/release/*.apk

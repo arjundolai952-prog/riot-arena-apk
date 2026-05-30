@@ -1,139 +1,26 @@
 name: Build TWA APK
-
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
-
-      - name: Create manifest and build
+      - name: Build
         run: |
-          mkdir -p twa && cd twa
-          python3 -c "
-          import json
-          m = {
-            'packageId': 'com.riotarena.app',
-            'host': 'benevolent-chimera-952b86.netlify.app',
-            'name': 'Riot Arena',
-            'launcherName': 'Riot Arena',
-            'display': 'standalone',
-            'orientation': 'portrait',
-            'themeColor': '#0a0f1e',
-            'navigationColor': '#0a0f1e',
-            'navigationColorDark': '#0a0f1e',
-            'navigationDividerColor': '#0a0f1e',
-            'navigationDividerColorDark': '#0a0f1e',
-            'backgroundColor': '#0a0f1e',
-            'enableNotifications': True,
-            'startUrl': '/',
-            'iconUrl': 'https://benevolent-chimera-952b86.netlify.app/icon-512.png',
-            'maskableIconUrl': 'https://benevolent-chimera-952b86.netlify.app/icon-512.png',
-            'monochromeIconUrl': 'https://benevolent-chimera-952b86.netlify.app/icon-512.png',
-            'appVersion': '1.0.0',
-            'appVersionCode': 1,
-            'signingMode': 'none',
-            'generatorApp': 'bubblewrap-cli',
-            'webManifestUrl': 'https://benevolent-chimera-952b86.netlify.app/manifest.json',
-            'isChromeOSOnly': False,
-            'isMetaQuest': False,
-            'fullScopeUrl': 'https://benevolent-chimera-952b86.netlify.app/',
-            'minSdkVersion': 19,
-            'shortcuts': []
-          }
-          with open('twa-manifest.json', 'w') as f:
-            json.dump(m, f)
-          "
+          mkdir twa && cd twa
+          printf 'n\n' | bubblewrap init --manifest=https://benevolent-chimera-952b86.netlify.app/manifest.json
           printf 'n\n' | bubblewrap build --skipPwaValidation
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: riot-arena-apk
-          path: twa/app/build/outputs/apk/release/*.apk          path: "twa/app/build/outputs/apk/release/*.apk"          path: twa/app/build/outputs/apk/release/*.apk            "launcherName": "Riot Arena",
-            "display": "standalone",
-            "orientation": "portrait",
-            "themeColor": "#0a0f1e",
-            "navigationColor": "#0a0f1e",
-            "navigationColorDark": "#0a0f1e",
-            "navigationDividerColor": "#0a0f1e",
-            "navigationDividerColorDark": "#0a0f1e",
-            "backgroundColor": "#0a0f1e",
-            "enableNotifications": true,
-            "startUrl": "/",
-            "iconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
-            "maskableIconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
-            "monochromeIconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
-            "appVersion": "1.0.0",
-            "appVersionCode": 1,
-            "signingMode": "none",
-            "generatorApp": "bubblewrap-cli",
-            "webManifestUrl": "https://benevolent-chimera-952b86.netlify.app/manifest.json",
-            "isChromeOSOnly": false,
-            "isMetaQuest": false,
-            "fullScopeUrl": "https://benevolent-chimera-952b86.netlify.app/",
-            "minSdkVersion": 19,
-            "shortcuts": []
-          }
-          MANIFEST
-
-      - name: Build APK
-        working-directory: twa
-        run: echo "n" | bubblewrap build --skipPwaValidation
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: riot-arena-apk
-          path: twa/app/build/outputs/apk/release/*.apk            "launcherName": "Riot Arena",
-            "display": "standalone",
-            "orientation": "portrait",
-            "themeColor": "#0a0f1e",
-            "navigationColor": "#0a0f1e",
-            "navigationColorDark": "#0a0f1e",
-            "navigationDividerColor": "#0a0f1e",
-            "navigationDividerColorDark": "#0a0f1e",
-            "backgroundColor": "#0a0f1e",
-            "enableNotifications": true,
-            "startUrl": "/",
-            "iconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
-            "maskableIconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
-            "monochromeIconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
-            "appVersion": "1.0.0",
-            "appVersionCode": 1,
-            "signingMode": "none",
-            "generatorApp": "bubblewrap-cli",
-            "webManifestUrl": "https://benevolent-chimera-952b86.netlify.app/manifest.json",
-            "isChromeOSOnly": false,
-            "isMetaQuest": false,
-            "fullScopeUrl": "https://benevolent-chimera-952b86.netlify.app/",
-            "minSdkVersion": 19,
-            "shortcuts": []
-          }
-          MANIFEST
-
-      - name: Build APK
-        working-directory: twa
-        run: bubblewrap build --skipPwaValidation
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: riot-arena-apk
+          name: apk
           path: twa/app/build/outputs/apk/release/*.apk

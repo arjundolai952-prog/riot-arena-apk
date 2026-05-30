@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,12 +20,46 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      - name: Init TWA
+      - name: Create TWA config
         run: |
-          bubblewrap init --manifest=https://benevolent-chimera-952b86.netlify.app/manifest.json --directory=twa
+          mkdir -p twa
+          cat > twa/twa-manifest.json << 'MANIFEST'
+          {
+            "packageId": "com.riotarena.app",
+            "host": "benevolent-chimera-952b86.netlify.app",
+            "name": "Riot Arena",
+            "launcherName": "Riot Arena",
+            "display": "standalone",
+            "orientation": "portrait",
+            "themeColor": "#0a0f1e",
+            "navigationColor": "#0a0f1e",
+            "navigationColorDark": "#0a0f1e",
+            "navigationDividerColor": "#0a0f1e",
+            "navigationDividerColorDark": "#0a0f1e",
+            "backgroundColor": "#0a0f1e",
+            "enableNotifications": true,
+            "startUrl": "/",
+            "iconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
+            "maskableIconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
+            "monochromeIconUrl": "https://benevolent-chimera-952b86.netlify.app/icon-512.png",
+            "appVersion": "1.0.0",
+            "appVersionCode": 1,
+            "signingMode": "none",
+            "generatorApp": "bubblewrap-cli",
+            "webManifestUrl": "https://benevolent-chimera-952b86.netlify.app/manifest.json",
+            "isChromeOSOnly": false,
+            "isMetaQuest": false,
+            "fullScopeUrl": "https://benevolent-chimera-952b86.netlify.app/",
+            "minSdkVersion": 19,
+            "shortcuts": []
+          }
+          MANIFEST
 
       - name: Build APK
         working-directory: twa

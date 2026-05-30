@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: riot-arena-apk
-          path: twa/app/build/outputs/apk/release/*.apk            "launcherName": "Riot Arena",
+          path: "twa/app/build/outputs/apk/release/*.apk"          path: twa/app/build/outputs/apk/release/*.apk            "launcherName": "Riot Arena",
             "display": "standalone",
             "orientation": "portrait",
             "themeColor": "#0a0f1e",
